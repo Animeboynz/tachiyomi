@@ -310,6 +310,33 @@
         <item name="colorPrimaryInverse">@color/yotsuba_primaryInverse</item>
     </style>
 
+    <!--== Azure Driftwood Theme ==-->
+    <style name="Theme.Tachiyomi.Azure">
+        <!-- Theme Colors -->
+        <item name="colorPrimary">@color/azure_primary</item>
+        <item name="colorOnPrimary">@color/azure_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/azure_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/azure_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/azure_secondary</item>
+        <item name="colorOnSecondary">@color/azure_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/azure_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/azure_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/azure_tertiary</item>
+        <item name="colorOnTertiary">@color/azure_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/azure_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/azure_onTertiaryContainer</item>
+        <item name="android:colorBackground">@color/azure_background</item>
+        <item name="colorOnBackground">@color/azure_onBackground</item>
+        <item name="colorSurface">@color/azure_surface</item>
+        <item name="colorOnSurface">@color/azure_onSurface</item>
+        <item name="colorSurfaceVariant">@color/azure_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/azure_onSurfaceVariant</item>
+        <item name="colorOutline">@color/azure_outline</item>
+        <item name="colorOnSurfaceInverse">@color/azure_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/azure_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/azure_primaryInverse</item>
+    </style>
+
     <!--== Tidal Wave Theme ==-->
     <style name="Theme.Tachiyomi.TidalWave">
         <!-- Theme Colors -->

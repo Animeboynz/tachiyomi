@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Colors for Azure Driftwood theme
+  ~ Color palette from (https://coolors.co/)
+  ~
+  ~ Key colors:
+  ~ Primary #ED4A65
+  ~ Secondary #ED4A65
+  ~ Tertiary #775930
+  ~ Neutral #655C5C
+-->
+<resources>
+    <color name="azure_primary">#2A324B</color>//Latest Text and Settings icon color/ Slider on color and Incognito background color and affects (bottom bar, start button color), In library text, loading circle, reader page number and slider dot
+    <color name="azure_onPrimary">#F7C59F</color>//Chapter number, start button, Sad face, incognito bar and other text. center slider dot
+    <color name="azure_primaryContainer">#2A324B</color>//Start Reading Button
+    <color name="azure_onPrimaryContainer">#000000</color>//Start Reading Text???????????????
+    <color name="azure_secondary">#2A324B</color>//Unread Chapters Badge and settings heading
+    <color name="azure_onSecondary">#FFFFFF</color>//Unread chapter number Font
+    <color name="azure_secondaryContainer">#2A324B</color>//Bottom Bar Selected outline
+    <color name="azure_onSecondaryContainer">#F7C59F</color>//Currently selected bottom bar icon
+    <color name="azure_tertiary">#000000</color>//Downloaded Only Top Banner
+    <color name="azure_onTertiary">#FFFFFF</color>//Downloaded Only Top Banner Font
+    <color name="azure_tertiaryContainer">#000000</color>//??????????????
+    <color name="azure_onTertiaryContainer">#000000</color>//????????????????
+    <color name="azure_background">#F7C59F</color>//All background except settings
+    <color name="azure_onBackground">#2A324B</color>//Manga SUmmary and chapter count when opened(Pin icon for sources), Text color including extensions badge and Sad faces
+    <color name="azure_surface">#F7C59F</color>//Bottom Bar, Top Bar, Reader bars and settings background,
+    <color name="azure_onSurface">#2A324B</color>//Reader Icons and Settings, Chapter name and genre when opened, Delete icon in history, unlelected tab in browse, selected tab in bottom bar, top bar text and book title,  setting tachiyomi logo, Tab Header and settings Font
+    <color name="azure_surfaceVariant">#F7C59F</color>//SLider off color
+    <color name="azure_onSurfaceVariant">#2A324B</color>//Unselected bottom bar icon, Top bar icons, Browse and history headers, some reader settings tabs, and download icons
+    <color name="azure_outline">#000000</color>//Slider off outline and centre dot
+    <color name="azure_inverseOnSurface">#F7C59F</color>//Refresh Bottom box font color
+    <color name="azure_inverseSurface">#2A324B</color>//Refresh Bottom box color
+    <color name="azure_primaryInverse">#000000</color>//???????????
+</resources>
