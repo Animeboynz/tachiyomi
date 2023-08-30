@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "eu.kanade.tachiyomi"
 
-        versionCode = 104
+        versionCode = 105
         versionName = "0.14.6"
 
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
@@ -66,11 +66,11 @@ android {
             initWith(getByName("release"))
             buildConfigField("boolean", "PREVIEW", "true")
 
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks.add("release")
             val debugType = getByName("debug")
-            signingConfig = debugType.signingConfig
             versionNameSuffix = debugType.versionNameSuffix
             applicationIdSuffix = debugType.applicationIdSuffix
-            matchingFallbacks.add("release")
         }
         create("benchmark") {
             initWith(getByName("release"))
@@ -78,6 +78,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks.add("release")
             isDebuggable = false
+            isProfileable = true
             versionNameSuffix = "-benchmark"
             applicationIdSuffix = ".benchmark"
         }
@@ -193,7 +194,7 @@ dependencies {
     implementation(androidx.bundles.workmanager)
 
     // RxJava
-    implementation(libs.bundles.reactivex)
+    implementation(libs.rxjava)
     implementation(libs.flowreactivenetwork)
 
     // Networking

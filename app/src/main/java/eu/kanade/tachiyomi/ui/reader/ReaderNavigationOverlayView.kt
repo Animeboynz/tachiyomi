@@ -61,12 +61,12 @@ class ReaderNavigationOverlayView(context: Context, attributeSet: AttributeSet) 
     override fun onDraw(canvas: Canvas) {
         if (navigation == null) return
 
-        navigation?.regions?.forEach { region ->
+        navigation?.getRegions()?.forEach { region ->
             val rect = region.rectF
 
             // Scale rect from 1f,1f to screen width and height
             canvas.withScale(width.toFloat(), height.toFloat()) {
-                regionPaint.color = context.getColor(region.type.colorRes)
+                regionPaint.color = region.type.color
                 drawRect(rect, regionPaint)
             }
 

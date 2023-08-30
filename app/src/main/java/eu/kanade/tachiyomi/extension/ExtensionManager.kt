@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.extension.api.ExtensionGithubApi
+import eu.kanade.tachiyomi.extension.api.ExtensionUpdateNotifier
 import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.extension.model.InstallStep
 import eu.kanade.tachiyomi.extension.model.LoadResult
@@ -65,7 +66,10 @@ class ExtensionManager(
     fun getAppIconForSource(sourceId: Long): Drawable? {
         val pkgName = _installedExtensionsFlow.value.find { ext -> ext.sources.any { it.id == sourceId } }?.pkgName
         if (pkgName != null) {
-            return iconMap[pkgName] ?: iconMap.getOrPut(pkgName) { context.packageManager.getApplicationIcon(pkgName) }
+            return iconMap[pkgName] ?: iconMap.getOrPut(pkgName) {
+                ExtensionLoader.getExtensionPackageInfoFromPkgName(context, pkgName)!!.applicationInfo
+                    .loadIcon(context.packageManager)
+            }
         }
         return null
     }
@@ -195,7 +199,7 @@ class ExtensionManager(
     }
 
     /**
-     * Returns an observable of the installation process for the given extension. It will complete
+     * Returns a flow of the installation process for the given extension. It will complete
      * once the extension is installed or throws an error. The process will be canceled if
      * unsubscribed before its completion.
      *
@@ -206,7 +210,7 @@ class ExtensionManager(
     }
 
     /**
-     * Returns an observable of the installation process for the given extension. It will complete
+     * Returns a flow of the installation process for the given extension. It will complete
      * once the extension is updated or throws an error. The process will be canceled if
      * unsubscribed before its completion.
      *
@@ -238,10 +242,10 @@ class ExtensionManager(
     /**
      * Uninstalls the extension that matches the given package name.
      *
-     * @param pkgName The package name of the application to uninstall.
+     * @param extension The extension to uninstall.
      */
-    fun uninstallExtension(pkgName: String) {
-        installer.uninstallApk(pkgName)
+    fun uninstallExtension(extension: Extension) {
+        installer.uninstallApk(extension.pkgName)
     }
 
     /**
@@ -260,18 +264,13 @@ class ExtensionManager(
         val nowTrustedExtensions = _untrustedExtensionsFlow.value.filter { it.signatureHash == signature }
         _untrustedExtensionsFlow.value -= nowTrustedExtensions
 
-        val ctx = context
         launchNow {
             nowTrustedExtensions
                 .map { extension ->
-                    async { ExtensionLoader.loadExtensionFromPkgName(ctx, extension.pkgName) }
+                    async { ExtensionLoader.loadExtensionFromPkgName(context, extension.pkgName) }.await()
                 }
-                .map { it.await() }
-                .forEach { result ->
-                    if (result is LoadResult.Success) {
-                        registerNewExtension(result.extension)
-                    }
-                }
+                .filterIsInstance<LoadResult.Success>()
+                .forEach { registerNewExtension(it.extension) }
         }
     }
 
@@ -337,6 +336,7 @@ class ExtensionManager(
         }
 
         override fun onPackageUninstalled(pkgName: String) {
+            ExtensionLoader.uninstallPrivateExtension(context, pkgName)
             unregisterExtension(pkgName)
             updatePendingUpdatesCount()
         }
@@ -361,6 +361,10 @@ class ExtensionManager(
     }
 
     private fun updatePendingUpdatesCount() {
-        preferences.extensionUpdatesCount().set(_installedExtensionsFlow.value.count { it.hasUpdate })
+        val pendingUpdateCount = _installedExtensionsFlow.value.count { it.hasUpdate }
+        preferences.extensionUpdatesCount().set(pendingUpdateCount)
+        if (pendingUpdateCount == 0) {
+            ExtensionUpdateNotifier(context).dismiss()
+        }
     }
 }

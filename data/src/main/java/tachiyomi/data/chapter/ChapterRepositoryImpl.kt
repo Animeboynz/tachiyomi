@@ -2,7 +2,6 @@ package tachiyomi.data.chapter
 
 import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
-import tachiyomi.core.util.lang.toLong
 import tachiyomi.core.util.system.logcat
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.chapter.model.Chapter
@@ -56,10 +55,10 @@ class ChapterRepositoryImpl(
                     url = chapterUpdate.url,
                     name = chapterUpdate.name,
                     scanlator = chapterUpdate.scanlator,
-                    read = chapterUpdate.read?.toLong(),
-                    bookmark = chapterUpdate.bookmark?.toLong(),
+                    read = chapterUpdate.read,
+                    bookmark = chapterUpdate.bookmark,
                     lastPageRead = chapterUpdate.lastPageRead,
-                    chapterNumber = chapterUpdate.chapterNumber?.toDouble(),
+                    chapterNumber = chapterUpdate.chapterNumber,
                     sourceOrder = chapterUpdate.sourceOrder,
                     dateFetch = chapterUpdate.dateFetch,
                     dateUpload = chapterUpdate.dateUpload,

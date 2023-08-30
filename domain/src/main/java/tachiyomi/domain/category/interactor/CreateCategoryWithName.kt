@@ -14,7 +14,7 @@ class CreateCategoryWithName(
 
     private val initialFlags: Long
         get() {
-            val sort = preferences.librarySortingMode().get()
+            val sort = preferences.sortingMode().get()
             return sort.type.flag or sort.direction.flag
         }
 
@@ -37,8 +37,8 @@ class CreateCategoryWithName(
         }
     }
 
-    sealed class Result {
-        data object Success : Result()
-        data class InternalError(val error: Throwable) : Result()
+    sealed interface Result {
+        data object Success : Result
+        data class InternalError(val error: Throwable) : Result
     }
 }

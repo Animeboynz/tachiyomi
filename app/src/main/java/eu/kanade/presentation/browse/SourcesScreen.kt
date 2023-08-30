@@ -47,7 +47,7 @@ fun SourcesScreen(
     onLongClickItem: (Source) -> Unit,
 ) {
     when {
-        state.isLoading -> LoadingScreen(modifier = Modifier.padding(contentPadding))
+        state.isLoading -> LoadingScreen(Modifier.padding(contentPadding))
         state.isEmpty -> EmptyScreen(
             textResource = R.string.source_empty_screen,
             modifier = Modifier.padding(contentPadding),
@@ -192,7 +192,7 @@ fun SourceOptionsDialog(
     )
 }
 
-sealed class SourceUiModel {
-    data class Item(val source: Source) : SourceUiModel()
-    data class Header(val language: String) : SourceUiModel()
+sealed interface SourceUiModel {
+    data class Item(val source: Source) : SourceUiModel
+    data class Header(val language: String) : SourceUiModel
 }

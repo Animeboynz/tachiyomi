@@ -5,8 +5,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithTrackServiceTwoWay
+import eu.kanade.domain.chapter.interactor.SyncChapterProgressWithTrack
 import eu.kanade.domain.track.model.toDbTrack
 import eu.kanade.domain.track.model.toDomainTrack
 import eu.kanade.domain.track.service.TrackPreferences
@@ -29,18 +28,15 @@ import uy.kohesive.injekt.injectLazy
 import java.time.ZoneOffset
 import tachiyomi.domain.track.model.Track as DomainTrack
 
-abstract class TrackService(val id: Long) {
+abstract class TrackService(val id: Long, val name: String) {
 
-    val preferences: BasePreferences by injectLazy()
     val trackPreferences: TrackPreferences by injectLazy()
     val networkService: NetworkHelper by injectLazy()
+    private val insertTrack: InsertTrack by injectLazy()
+    private val syncChapterProgressWithTrack: SyncChapterProgressWithTrack by injectLazy()
 
     open val client: OkHttpClient
         get() = networkService.client
-
-    // Name of the manga sync service to display
-    @StringRes
-    abstract fun nameRes(): Int
 
     // Application and remote support for reading dates
     open val supportsReadingDates: Boolean = false
@@ -65,7 +61,7 @@ abstract class TrackService(val id: Long) {
     abstract fun getScoreList(): List<String>
 
     // TODO: Store all scores as 10 point in the future maybe?
-    open fun get10PointScore(track: DomainTrack): Float {
+    open fun get10PointScore(track: DomainTrack): Double {
         return track.score
     }
 
@@ -90,7 +86,7 @@ abstract class TrackService(val id: Long) {
         trackPreferences.setTrackCredentials(this, "", "")
     }
 
-    open val isLogged: Boolean
+    open val isLoggedIn: Boolean
         get() = getUsername().isNotEmpty() &&
             getPassword().isNotEmpty()
 
@@ -102,7 +98,8 @@ abstract class TrackService(val id: Long) {
         trackPreferences.setTrackCredentials(this, username, password)
     }
 
-    suspend fun registerTracking(item: Track, mangaId: Long) {
+    // TODO: move this to an interactor, and update all trackers based on common data
+    suspend fun register(item: Track, mangaId: Long) {
         item.manga_id = mangaId
         try {
             withIOContext {
@@ -110,23 +107,24 @@ abstract class TrackService(val id: Long) {
                 val hasReadChapters = allChapters.any { it.read }
                 bind(item, hasReadChapters)
 
-                val track = item.toDomainTrack(idRequired = false) ?: return@withIOContext
+                var track = item.toDomainTrack(idRequired = false) ?: return@withIOContext
 
-                Injekt.get<InsertTrack>().await(track)
+                insertTrack.await(track)
 
+                // TODO: merge into SyncChaptersWithTrackServiceTwoWay?
                 // Update chapter progress if newer chapters marked read locally
                 if (hasReadChapters) {
                     val latestLocalReadChapterNumber = allChapters
                         .sortedBy { it.chapterNumber }
                         .takeWhile { it.read }
                         .lastOrNull()
-                        ?.chapterNumber?.toDouble() ?: -1.0
+                        ?.chapterNumber ?: -1.0
 
                     if (latestLocalReadChapterNumber > track.lastChapterRead) {
-                        val updatedTrack = track.copy(
+                        track = track.copy(
                             lastChapterRead = latestLocalReadChapterNumber,
                         )
-                        setRemoteLastChapterRead(updatedTrack.toDbTrack(), latestLocalReadChapterNumber.toInt())
+                        setRemoteLastChapterRead(track.toDbTrack(), latestLocalReadChapterNumber.toInt())
                     }
 
                     if (track.startDate <= 0) {
@@ -137,14 +135,15 @@ abstract class TrackService(val id: Long) {
 
                         firstReadChapterDate?.let {
                             val startDate = firstReadChapterDate.time.convertEpochMillisZone(ZoneOffset.systemDefault(), ZoneOffset.UTC)
+                            track = track.copy(
+                                startDate = startDate,
+                            )
                             setRemoteStartDate(track.toDbTrack(), startDate)
                         }
                     }
                 }
 
-                if (this is EnhancedTrackService) {
-                    Injekt.get<SyncChaptersWithTrackServiceTwoWay>().await(allChapters, track, this@TrackService)
-                }
+                syncChapterProgressWithTrack.await(mangaId, track, this@TrackService)
             }
         } catch (e: Throwable) {
             withUIContext { Injekt.get<Application>().toast(e.message) }
@@ -166,6 +165,7 @@ abstract class TrackService(val id: Long) {
         track.last_chapter_read = chapterNumber.toFloat()
         if (track.total_chapters != 0 && track.last_chapter_read.toInt() == track.total_chapters) {
             track.status = getCompletionStatus()
+            track.finished_reading_date = System.currentTimeMillis()
         }
         withIOContext { updateRemote(track) }
     }
@@ -190,7 +190,7 @@ abstract class TrackService(val id: Long) {
             try {
                 update(track)
                 track.toDomainTrack(idRequired = false)?.let {
-                    Injekt.get<InsertTrack>().await(it)
+                    insertTrack.await(it)
                 }
             } catch (e: Exception) {
                 logcat(LogPriority.ERROR, e) { "Failed to update remote track data id=$id" }

@@ -127,7 +127,7 @@ private fun ColumnScope.FilterPage(
             trackServices.map { service ->
                 val filterTracker by screenModel.libraryPreferences.filterTracking(service.id.toInt()).collectAsState()
                 TriStateItem(
-                    label = stringResource(service.nameRes()),
+                    label = service.name,
                     state = filterTracker,
                     onClick = { screenModel.toggleTracker(service.id.toInt()) },
                 )
@@ -180,7 +180,7 @@ private val displayModes = listOf(
 private fun ColumnScope.DisplayPage(
     screenModel: LibrarySettingsScreenModel,
 ) {
-    val displayMode by screenModel.libraryPreferences.libraryDisplayMode().collectAsState()
+    val displayMode by screenModel.libraryPreferences.displayMode().collectAsState()
     SettingsChipRow(R.string.action_display_mode) {
         displayModes.map { (titleRes, mode) ->
             FilterChip(
