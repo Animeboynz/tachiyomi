@@ -33,7 +33,7 @@ junrar = "com.github.junrar:junrar:7.5.5"
 
 sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
 sqlite-ktx = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sqlite" }
-sqlite-android = "com.github.requery:sqlite-android:3.42.0"
+sqlite-android = "com.github.requery:sqlite-android:3.43.0"
 
 preferencektx = "androidx.preference:preference-ktx:1.2.1"
 
@@ -64,7 +64,7 @@ swipe = "me.saket.swipe:swipe:1.2.0"
 
 logcat = "com.squareup.logcat:logcat:0.1"
 
-acra-http = "ch.acra:acra-http:5.11.1"
+acra-http = "ch.acra:acra-http:5.11.2"
 firebase-analytics = "com.google.firebase:firebase-analytics-ktx:21.3.0"
 
 aboutLibraries-gradle = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "aboutlib_version" }
@@ -83,14 +83,14 @@ sqldelight-dialects-sql = { module = "app.cash.sqldelight:sqlite-3-38-dialect", 
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.0"
-kotest-assertions = "io.kotest:kotest-assertions-core:5.6.2"
+kotest-assertions = "io.kotest:kotest-assertions-core:5.7.1"
 mockk = "io.mockk:mockk:1.13.7"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 
-kotlinter = "org.jmailen.gradle:kotlinter-gradle:3.13.0"
+ktlint = "org.jlleitschuh.gradle:ktlint-gradle:11.5.1"
 
 [bundles]
 okhttp = ["okhttp-core", "okhttp-logging", "okhttp-dnsoverhttps"]
